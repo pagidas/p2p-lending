@@ -1,8 +1,11 @@
 package org.example.quote
 
+import org.example.fp_helper.then
 import org.example.result.Failure
 import org.example.result.Result
 import org.example.result.Success
+import java.math.RoundingMode
+import kotlin.math.pow
 
 fun findQuoteLogic(fetchLenders: FetchLenders, givenLoanAmount: Int): Result<Quote, Problem> {
     fun Lenders.totalAvailable(): Int = map(Lender::available).fold(0, Int::plus)
@@ -12,13 +15,58 @@ fun findQuoteLogic(fetchLenders: FetchLenders, givenLoanAmount: Int): Result<Quo
     val loanAmount = LoanAmount.of(givenLoanAmount) ?: return Failure(InvalidLoanAmount())
     if (loanAmount.value > lenders.totalAvailable()) return Failure(NotEnoughAvailableLenders())
 
-    return Success(Quote(
-        Amount(value = loanAmount.value),
-        AnnualPercentageInterestRate(0.0),
-        Repayment(amount = 0.0),
-        Repayment(amount = 0.0)
-    ))
+    val annualInterestRate = lowestPossibleAnnualInterestRate(loanAmount.value, lenders)
+    val periodicInterestRate = annualInterestRate / 12
+    val periodicPayment = periodicPayment(givenLoanAmount, periodicInterestRate, 36)
+
+    return Success(
+        Quote(
+            Amount(value = loanAmount.value),
+            annualPercentageInterestRate(annualInterestRate),
+            monthlyRepayment(periodicPayment),
+            totalRepayment(periodicPayment)
+        )
+    )
 }
+
+private fun lowestPossibleAnnualInterestRate(loanAmount: Int, lenders: Lenders): Double {
+    var acc = 0
+    return lenders
+        .asSequence()
+        .sortedBy(Lender::annualInterestRate)
+        .takeWhileInc {
+            acc += it.available
+            acc <= loanAmount
+        }
+        .map(Lender::annualInterestRate)
+        .average()
+}
+
+private fun periodicPayment(principal: Int, periodicInterestRate: Double, totalNumberOfPayments: Int): Double =
+    (principal * periodicInterestRate) / (1 - (1 + periodicInterestRate).pow(-totalNumberOfPayments))
+
+private fun <T> Sequence<T>.takeWhileInc(p: (T) -> Boolean): Sequence<T> {
+    var shouldContinue = true
+    return takeWhile {
+        val result = shouldContinue
+        shouldContinue = p(it)
+        result
+    }
+}
+
+
+private val percentage: (Double) -> Double = { d -> d * 100 }
+private fun roundHalfUp(scale: Int): (Double) -> Double = { d ->
+    d.toBigDecimal().setScale(scale, RoundingMode.HALF_UP).toDouble()
+}
+private fun times(numberOfPayments: Int): (Double) -> Double = { d -> d * numberOfPayments }
+private val mapToRepayment: (Double) -> Repayment = { d -> Repayment(amount = d) }
+private val mapToAnnualPercentageInterestRate: (Double) -> AnnualPercentageInterestRate = ::AnnualPercentageInterestRate
+
+private val monthlyRepayment: (Double) -> Repayment = roundHalfUp(2) then mapToRepayment
+private val totalRepayment: (Double) -> Repayment = times(36) then roundHalfUp(2) then mapToRepayment
+private val annualPercentageInterestRate: (Double) -> AnnualPercentageInterestRate =
+    percentage then roundHalfUp(1) then mapToAnnualPercentageInterestRate
 
 internal class LoanAmount private constructor(val value: Int) {
     companion object {
