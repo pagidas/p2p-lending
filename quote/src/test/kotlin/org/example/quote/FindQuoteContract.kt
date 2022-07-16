@@ -30,5 +30,11 @@ abstract class FindQuoteContract {
         }
     }
 
+    @Test
+    fun `can not provide a quote when given loan amount exceeds lenders available budgets`() {
+       val result = findQuote(1500)
+       assertEquals(Failure(NotEnoughAvailableLenders()), result)
+    }
+
 }
 

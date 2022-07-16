@@ -4,8 +4,13 @@ import org.example.result.Failure
 import org.example.result.Result
 import org.example.result.Success
 
-fun findQuoteLogic(givenLoanAmount: Int): Result<Quote, Problem> {
+fun findQuoteLogic(fetchLenders: FetchLenders, givenLoanAmount: Int): Result<Quote, Problem> {
+    fun Lenders.totalAvailable(): Int = map(Lender::available).fold(0, Int::plus)
+
+    val lenders = fetchLenders()
+
     val loanAmount = LoanAmount.of(givenLoanAmount) ?: return Failure(InvalidLoanAmount())
+    if (loanAmount.value > lenders.totalAvailable()) return Failure(NotEnoughAvailableLenders())
 
     return Success(Quote(
         Amount(value = loanAmount.value),

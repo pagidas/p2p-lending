@@ -40,6 +40,11 @@ data class Amount(
 )
 data class AnnualPercentageInterestRate(val value: Double)
 
+/**
+ * The driven application interface.
+ */
+fun interface FetchLenders: () -> Lenders
+
 typealias Lenders = Collection<Lender>
 data class Lender(val name: String, val annualInterestRate: Double, val available: Int)
 
