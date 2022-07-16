@@ -6,14 +6,24 @@ package org.example.result
 sealed interface Result<out VALUE, out FAILURE> {
     val success: VALUE?
     val failure: FAILURE?
+
+    companion object {
+        fun <V> catching(f: () -> V): Result<V, Exception> {
+            return try {
+                Success(f())
+            } catch (ex: Exception) {
+                Failure(ex)
+            }
+        }
+    }
 }
 data class Success<out V>(val value: V): Result<V, Nothing> {
-    override fun toString(): String = "Ok($value)"
+    override fun toString(): String = "Success($value)"
     override val success: V = value
     override val failure: Nothing? = null
 }
 data class Failure<out E>(val error: E): Result<Nothing, E> {
-    override fun toString(): String = "Err($error)"
+    override fun toString(): String = "Failure($error)"
     override val success: Nothing? = null
     override val failure: E = error
 }

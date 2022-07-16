@@ -1,5 +1,12 @@
-package org.example.quote
+package org.example.quote.test_fixtures
 
+import org.example.quote.Amount
+import org.example.quote.AnnualPercentageInterestRate
+import org.example.quote.FindQuote
+import org.example.quote.InvalidLoanAmount
+import org.example.quote.NotEnoughAvailableLenders
+import org.example.quote.Quote
+import org.example.quote.Repayment
 import org.example.result.Failure
 import org.example.result.Success
 import org.junit.jupiter.api.Assertions.assertEquals

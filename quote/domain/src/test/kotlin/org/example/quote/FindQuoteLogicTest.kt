@@ -1,5 +1,7 @@
 package org.example.quote
 
+import org.example.quote.test_fixtures.FindQuoteContract
+
 class FindQuoteLogicTest: FindQuoteContract() {
 
     private val lenders = listOf(

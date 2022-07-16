@@ -34,4 +34,12 @@ class ResultTest {
         assertEquals("Got error: an error", resultB)
     }
 
+    @Test
+    fun `can catch an exception and map it to result`() {
+        val result = Result.catching { error("something naughty happened") }
+        val failed = result.mapFailure(Exception::message)
+
+        assertEquals(Failure("something naughty happened"), failed)
+    }
+
 }
