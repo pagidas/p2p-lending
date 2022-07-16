@@ -1,3 +1,7 @@
-
 rootProject.name = "zopa-tech-test"
-include("quote", "util")
+
+include(
+    "quote",
+    "quote:domain",
+    "util"
+)
