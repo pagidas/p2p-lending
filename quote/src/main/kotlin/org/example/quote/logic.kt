@@ -7,9 +7,10 @@ import org.example.result.Success
 import java.math.RoundingMode
 import kotlin.math.pow
 
-fun findQuoteLogic(fetchLenders: FetchLenders, givenLoanAmount: Int): Result<Quote, Problem> {
+fun findQuoteLogic(fetchLenders: FetchLenders, loanProps: LoanProperties, givenLoanAmount: Int): Result<Quote, Problem> {
     fun Lenders.totalAvailable(): Int = map(Lender::available).fold(0, Int::plus)
 
+    val numberOfRepayments = loanProps.numberOfRepayments
     val lenders = fetchLenders()
 
     val loanAmount = LoanAmount.of(givenLoanAmount) ?: return Failure(InvalidLoanAmount())
@@ -17,14 +18,14 @@ fun findQuoteLogic(fetchLenders: FetchLenders, givenLoanAmount: Int): Result<Quo
 
     val annualInterestRate = lowestPossibleAnnualInterestRate(loanAmount.value, lenders)
     val periodicInterestRate = annualInterestRate / 12
-    val periodicPayment = periodicPayment(givenLoanAmount, periodicInterestRate, 36)
+    val periodicPayment = periodicPayment(givenLoanAmount, periodicInterestRate, numberOfRepayments)
 
     return Success(
         Quote(
             Amount(value = loanAmount.value),
             annualPercentageInterestRate(annualInterestRate),
             monthlyRepayment(periodicPayment),
-            totalRepayment(periodicPayment)
+            totalRepayment(numberOfRepayments)(periodicPayment)
         )
     )
 }
@@ -64,7 +65,9 @@ private val mapToRepayment: (Double) -> Repayment = { d -> Repayment(amount = d)
 private val mapToAnnualPercentageInterestRate: (Double) -> AnnualPercentageInterestRate = ::AnnualPercentageInterestRate
 
 private val monthlyRepayment: (Double) -> Repayment = roundHalfUp(2) then mapToRepayment
-private val totalRepayment: (Double) -> Repayment = times(36) then roundHalfUp(2) then mapToRepayment
+private val totalRepayment: (Int) -> (Double) -> Repayment = { numberOfRepayments ->
+    times(numberOfRepayments) then roundHalfUp(2) then mapToRepayment
+}
 private val annualPercentageInterestRate: (Double) -> AnnualPercentageInterestRate =
     percentage then roundHalfUp(1) then mapToAnnualPercentageInterestRate
 

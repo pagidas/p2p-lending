@@ -40,6 +40,8 @@ data class Amount(
 )
 data class AnnualPercentageInterestRate(val value: Double)
 
+data class LoanProperties(val numberOfRepayments: Int)
+
 /**
  * The driven application interface.
  */

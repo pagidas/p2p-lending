@@ -12,5 +12,5 @@ class FindQuoteLogicTest: FindQuoteContract() {
         Lender("G", 0.071, 60)
     )
 
-    override val findQuote: FindQuote = FindQuote { findQuoteLogic({ lenders }, it) }
+    override val findQuote: FindQuote = FindQuote { findQuoteLogic({ lenders }, LoanProperties(36), it) }
 }
