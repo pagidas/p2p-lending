@@ -6,4 +6,5 @@ include(
     "quote:csv-parsing-adapter",
     "util"
 )
-
+include("quote:console-out-adapter")
+findProject(":quote:console-out-adapter")?.name = "console-out-adapter"
