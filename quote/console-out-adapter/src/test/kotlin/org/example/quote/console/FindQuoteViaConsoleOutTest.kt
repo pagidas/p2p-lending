@@ -29,10 +29,9 @@ private val lenders = listOf(
     Lender("F", 0.074, 140),
     Lender("G", 0.071, 60)
 )
-private val findQuoteLogic: FindQuote = FindQuote {
-    val quote = ::findQuoteLogic bind FetchLenders { lenders } bind LoanProperties(36)
-    quote(it)
-}
+private val findQuoteLogic: FindQuote = FindQuote(
+    ::findQuoteLogic bind FetchLenders { lenders } bind LoanProperties(36)
+)
 
 class FindQuoteViaConsoleOutTest: FindQuoteContract() {
 
