@@ -111,5 +111,58 @@ not exactly match the example test cases provided below.
 > Total repayment: £1888.55
 ```
 
+## Structure
+The implementation about finding a quote according to a list of lenders is all
+located in the `quote` folder at the root of the project. More specifically,
+the very logic, technology-ignorant, is located in `quote/domain`. The rest of
+the modules are about certain technology-specific concerns such as:
+- the quote api is able to provide a quote reading from a csv file.
+- the quote api is exposed in a console manner, in stdout.
 
+The `util` module contains helpers to model the quote domain in a more functional
+approach:
+- a `Result` model similar to Java's `Either`.
+- functional helpers to compose functions, either by partial application or by 
+piping return type into the next function's argument.
+
+The `app` module contains all of that together in a main that makes it easy
+to run the console app, modifying things such as: the loan amount and the input
+csv file containing all the lenders with their respective details.
+
+## How to use
+Simply, open the `app` module and its main.
+
+The main looks like this:
+```kotlin
+fun main() {
+    /**
+     * Files are located in resources folder of this very module.
+     */
+    val example1 = getResources("/example1.csv")
+    val example3 = getResources("/example3.csv")
+
+    val findQuoteLogic = ::findQuoteLogic bind fetchLendersFromCsv(example1) bind LoanProperties(36)
+    val findQuoteConsole = ::quoteConsoleOutput bind FindQuote(findQuoteLogic)
+
+    findQuoteConsole(1000)
+}
+```
+Two csv files are located in the `resources` folder of the `app` module.
+Both files are loaded in variables, so that they are easy to change.
+
+If we want to change the csv file used to run the application, we can just point
+the other created file in the `fetchLendersFromCsv` operation. Changing the loan amount
+is just changing the argument in `findQuoteConsole` operation.
+
+The application just prints the result according to what the exercise above defines.
+
+Also, modifiable is the length of the loan; i.e. the number of repayments. This can be
+changed in `LoanProperties` when building the `findQuoteLogic` operation.
+
+## Testing
+We have defined a single test base, a contract, in which we run against the api
+built in different ways:
+- quote api in-memory, against hardcoded list of lenders.
+- quote api fetching lenders from a csv file.
+- quote api exposed in a console application.
 
