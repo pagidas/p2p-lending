@@ -1,4 +1,4 @@
-rootProject.name = "zopa-tech-test"
+rootProject.name = "p2p-lending"
 
 include(
     "quote",

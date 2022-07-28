@@ -1,6 +1,6 @@
-# Zopa Technical Test
+# Peer to peer lending
 
-There is a need for an application to find a quote from Zopa’s market of lenders for 36-month 
+There is a need for an application to find a quote from a provider’s market of lenders for 36-month 
 loans that apply interest on a monthly basis.
 
 Each lender in the market offers an amount of money to lend and the annual interest rate
@@ -11,7 +11,7 @@ they expect in return. The table below provides an example of market data:
 | Jane   | 0.075 | 1200      |
 | John   | 0.081 | 350       |
 
-To ensure that Zopa's quotes are competitive, select a combination of lenders’ offers which
+To ensure that provider's quotes are competitive, select a combination of lenders’ offers which
 gives the lowest possible rate. The monthly repayment and the total repayment amounts
 should be shown in addition to the amount requested and the annual interest rate for the
 quote.
@@ -38,17 +38,11 @@ Total repayment: £XXXX.XX
 
 ## Remarks
 
-* We recommend you choose the language most suitable to the role you are applying for.
 * The monthly repayments should spread the total repayment cost over the term of the loan. 
 Here is an explanation of how to calculate this: 
 https://en.wikipedia.org/wiki/Amortization_calculator#The_formula
-* We will review your code and run it against further test cases to see how it handles them.
 * The list of lenders’ offers may be hard-coded, a static resource, or taken from an external 
 source (e.g. a CSV file).
-* We’re interested in discovering more about your engineering skills and approach when 
-solving problems. It is acceptable to submit your program if it returns an answer that does
-not exactly match the example test cases provided below.
-* If you have any questions, then do not hesitate to contact us.
 
 ## Example test cases
 
@@ -61,7 +55,7 @@ not exactly match the example test cases provided below.
 
 **Input**
 ```
-> $ ./zopa-rate 1000
+> $ ./rate 1000
 ```
 **Output**
 ```
@@ -80,7 +74,7 @@ not exactly match the example test cases provided below.
 
 **Input**
 ```
-> $ ./zopa-rate 1700
+> $ ./rate 1700
 ```
 **Output**
 ```
@@ -101,7 +95,7 @@ not exactly match the example test cases provided below.
 
 **Input**
 ```
-> $ ./zopa-rate 1700
+> $ ./rate 1700
 ```
 **Output**
 ```
